@@ -1,445 +1,704 @@
 <!DOCTYPE html>
-<html lang="th" class="scroll-smooth">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Cricket Farm IoT - Research Landing Page</title>
-    <!-- Google Fonts -->
+    <title>ฟาร์มจิ้งหรีดอัจฉริยะ | การประยุกต์ใช้ IoT ในการพัฒนาตู้เลี้ยงจิ้งหรีดอัตโนมัติ</title>
+    <meta name="description" content="งานวิจัยการประยุกต์ใช้เทคโนโลยีอินเทอร์เน็ตของสรรพสิ่ง (IoT) ในการพัฒนาตู้เลี้ยงจิ้งหรีดอัตโนมัติ ต.หนองใหญ่ อ.สตึก จ.บุรีรัมย์ — มหาวิทยาลัยราชภัฏบุรีรัมย์">
+
+    <!-- Google Fonts: Prompt + Sarabun -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        prompt: ['Prompt', 'sans-serif'],
+                        sans: ['Sarabun', 'sans-serif'],
+                        display: ['Prompt', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#0F172A', // Slate 900
-                        secondary: '#10B981', // Emerald 500
-                        accent: '#3B82F6', // Blue 500
-                        dark: '#1E293B',
-                    },
-                    animation: {
-                        'float': 'float 6s ease-in-out infinite',
+                        brand: '#4F46E5',      // Indigo
+                        brandDark: '#312E81',  // Indigo 900
+                        teal: '#14B8A6',       // Teal
+                        tealLight: '#5EEAD4',
+                        ink: '#0F172A',        // Slate 900
                     },
                     keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        }
+                        floaty: {
+                            '0%,100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                    },
+                    animation: {
+                        floaty: 'floaty 6s ease-in-out infinite',
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { font-family: 'Prompt', sans-serif; }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Sarabun', sans-serif; }
+        h1,h2,h3,h4,.font-display { font-family: 'Prompt', sans-serif; }
+
+        /* Aurora / mesh gradient backdrop for hero */
+        .hero-aurora {
+            background:
+                radial-gradient(60% 80% at 15% 10%, rgba(99,102,241,.55) 0%, transparent 60%),
+                radial-gradient(55% 70% at 90% 20%, rgba(20,184,166,.45) 0%, transparent 60%),
+                radial-gradient(70% 90% at 70% 100%, rgba(79,70,229,.55) 0%, transparent 60%),
+                #1E1B4B;
         }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .grid-overlay {
+            background-image:
+                linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+            background-size: 40px 40px;
         }
-        .glass-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.15);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+        .text-gradient {
+            background: linear-gradient(90deg, #5EEAD4 0%, #ffffff 100%);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
         }
-        .hero-bg {
-            background: linear-gradient(135deg, #0F172A 0%, rgba(15, 23, 42, 0.85) 100%), url('images/img_42.jpeg') center/cover no-repeat fixed;
+
+        /* Scroll progress bar */
+        #progress {
+            position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+            background: linear-gradient(90deg, #4F46E5, #14B8A6);
+            z-index: 60; transition: width .1s linear;
         }
-        .blob-1 {
-            background: linear-gradient(to right, #10B981, #3B82F6);
-            filter: blur(80px);
-            opacity: 0.15;
-            border-radius: 50%;
+
+        /* Reveal on scroll */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s ease, transform .7s ease; }
+        .reveal.show { opacity: 1; transform: translateY(0); }
+
+        .card-hover { transition: transform .3s ease, box-shadow .3s ease; }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 22px 40px -18px rgba(79,70,229,.45); }
+
+        /* Glass nav */
+        .glass { background: rgba(255,255,255,.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+        .device-shadow { box-shadow: 0 40px 80px -30px rgba(15,23,42,.6); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal { opacity: 1; transform: none; transition: none; }
+            .animate-floaty { animation: none; }
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 antialiased overflow-x-hidden">
+<body class="bg-slate-50 text-slate-700 antialiased">
 
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 transition-all duration-300 backdrop-blur-md bg-white/70 border-b border-gray-200 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex-shrink-0 flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                        <i class="fa-solid fa-leaf"></i>
-                    </div>
-                    <span class="font-bold text-xl tracking-tight text-primary">Smart Farm IoT</span>
-                </div>
-                <div class="hidden md:flex space-x-8">
-                    <a href="#abstract" class="text-gray-600 hover:text-secondary font-medium transition-colors">บทคัดย่อ</a>
-                    <a href="#methodology" class="text-gray-600 hover:text-secondary font-medium transition-colors">ระเบียบวิธี</a>
-                    <a href="#results" class="text-gray-600 hover:text-secondary font-medium transition-colors">ผลลัพธ์</a>
-                    <a href="#researchers" class="text-gray-600 hover:text-secondary font-medium transition-colors">ผู้วิจัย</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <div id="progress"></div>
 
-    <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center pt-20 hero-bg text-white overflow-hidden">
-        <!-- Floating Elements -->
-        <div class="absolute top-1/4 left-10 w-64 h-64 blob-1 animate-float"></div>
-        <div class="absolute bottom-1/4 right-10 w-96 h-96 blob-1 animate-float" style="animation-delay: 2s;"></div>
-        
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col lg:flex-row items-center gap-12">
-            <div class="lg:w-3/5">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel text-secondary text-sm font-semibold mb-8 border border-secondary/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                    <span class="relative flex h-3 w-3">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+    <!-- ===== Navbar ===== -->
+    <header id="nav" class="fixed top-0 inset-x-0 z-50 transition-all duration-300">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <a href="#top" class="flex items-center gap-2.5 group">
+                    <span class="grid place-items-center w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-teal text-white shadow-lg shadow-indigo-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
                     </span>
-                    นวัตกรรมงานวิจัยและพัฒนา
+                    <span class="font-display font-bold text-base md:text-lg leading-tight text-white nav-brand transition-colors">Smart Cricket<span class="text-tealLight">.</span><span class="block text-[10px] font-normal tracking-widest opacity-70">IoT RESEARCH 2568</span></span>
+                </a>
+                <div class="hidden lg:flex items-center gap-7 text-sm font-medium nav-links text-white/90">
+                    <a href="#abstract" class="hover:text-tealLight transition-colors">บทคัดย่อ</a>
+                    <a href="#problem" class="hover:text-tealLight transition-colors">ที่มา</a>
+                    <a href="#system" class="hover:text-tealLight transition-colors">ระบบ</a>
+                    <a href="#dashboard" class="hover:text-tealLight transition-colors">การแสดงผล</a>
+                    <a href="#results" class="hover:text-tealLight transition-colors">ผลการวิจัย</a>
+                    <a href="#community" class="hover:text-tealLight transition-colors">ชุมชน</a>
+                    <a href="#researchers" class="hover:text-tealLight transition-colors">คณะผู้วิจัย</a>
                 </div>
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                    การประยุกต์ใช้เทคโนโลยี <br>
-                    <span class="gradient-text">อินเทอร์เน็ตของสรรพสิ่ง (IoT)</span>
-                </h1>
-                <h2 class="text-2xl md:text-3xl font-medium text-gray-300 mb-6">
-                    ในการพัฒนาตู้เลี้ยงจิ้งหรีดอัตโนมัติ
-                </h2>
-                <p class="text-lg text-gray-400 mb-10 max-w-2xl leading-relaxed font-light">
-                    ระบบควบคุมอุณหภูมิและความชื้นแบบเรียลไทม์ สำหรับกลุ่มเกษตรกร ชุมชนบ้านหนองใหญ่ ตำบลหนองใหญ่ อำเภอสตึก จังหวัดบุรีรัมย์ ช่วยเพิ่มผลผลิตและลดภาระแรงงานอย่างยั่งยืน
-                </p>
-                <div class="flex flex-wrap gap-4">
-                    <a href="#abstract" class="px-8 py-4 bg-gradient-to-r from-secondary to-emerald-600 hover:from-emerald-500 hover:to-emerald-400 text-white font-semibold rounded-xl shadow-lg shadow-secondary/30 transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-2">
-                        <i class="fa-solid fa-book-open"></i> อ่านบทคัดย่อ
-                    </a>
-                    <a href="#methodology" class="px-8 py-4 glass-panel hover:bg-white/10 text-white font-semibold rounded-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-2">
-                        ดูกระบวนการทำงาน <i class="fa-solid fa-arrow-right"></i>
-                    </a>
-                </div>
+                <a href="#abstract" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 hover:bg-white text-white border border-white/30 text-sm font-semibold transition-all nav-cta">
+                    อ่านงานวิจัย
+                </a>
             </div>
-            
-            <div class="lg:w-2/5 w-full">
-                <div class="relative w-full aspect-square max-w-md mx-auto">
-                    <!-- Dashboard Mockup Image -->
-                    <div class="absolute inset-0 bg-gradient-to-tr from-secondary/20 to-accent/20 rounded-3xl transform rotate-3 scale-105 blur-xl"></div>
-                    <img src="images/img_42.jpeg" alt="Smart Farm Dashboard" class="relative z-10 w-full h-full object-cover rounded-3xl shadow-2xl border border-white/10" onerror="this.src='https://images.unsplash.com/photo-1586771107445-d3ca888129ff?auto=format&fit=crop&q=80&w=800'">
-                    
-                    <!-- Floating Stat Badge -->
-                    <div class="absolute -bottom-6 -left-6 z-20 glass-panel bg-white/10 text-white p-4 rounded-2xl shadow-xl flex items-center gap-4 animate-float" style="animation-delay: 1s;">
-                        <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center text-secondary text-2xl">
-                            <i class="fa-solid fa-temperature-half"></i>
+        </nav>
+    </header>
+
+    <!-- ===== Hero ===== -->
+    <section id="top" class="hero-aurora relative overflow-hidden text-white pt-28 md:pt-36 pb-24">
+        <div class="absolute inset-0 grid-overlay opacity-60"></div>
+        <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-teal/20 blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+                <!-- Copy -->
+                <div class="reveal">
+                    <span class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full bg-white/10 border border-white/20 text-tealLight text-sm font-medium mb-6 backdrop-blur-sm">
+                        <span class="w-2 h-2 rounded-full bg-tealLight animate-pulse"></span>
+                        ฟาร์มจิ้งหรีดอัจฉริยะ · Smart Farm IoT
+                    </span>
+                    <h1 class="font-display text-4xl md:text-5xl xl:text-6xl font-extrabold leading-[1.15] mb-6">
+                        การประยุกต์ใช้<span class="text-gradient">เทคโนโลยี IoT</span> ในการพัฒนาตู้เลี้ยงจิ้งหรีดอัตโนมัติ
+                    </h1>
+                    <p class="text-lg text-indigo-100/90 leading-relaxed max-w-xl mb-9">
+                        ระบบควบคุมอุณหภูมิและความชื้นอัตโนมัติแบบเรียลไทม์ ผ่านบอร์ด NodeMCU ESP8266 และแอปพลิเคชัน Blynk
+                        เพื่อยกระดับการเลี้ยงจิ้งหรีดของเกษตรกร ต.หนองใหญ่ อ.สตึก จ.บุรีรัมย์
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#abstract" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-brand font-semibold shadow-xl shadow-indigo-900/30 hover:-translate-y-0.5 transition-all">
+                            อ่านงานวิจัยฉบับเต็ม
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                        <a href="#system" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold backdrop-blur-sm transition-all">
+                            ดูการทำงานของระบบ
+                        </a>
+                    </div>
+
+                    <!-- mini stats -->
+                    <div class="grid grid-cols-3 gap-4 mt-12 max-w-md">
+                        <div>
+                            <div class="font-display text-3xl font-bold text-white"><span class="count" data-target="4.49" data-decimals="2">0</span></div>
+                            <div class="text-xs text-indigo-200 mt-1">ความพึงพอใจเกษตรกร</div>
                         </div>
                         <div>
-                            <p class="text-xs text-gray-300">อุณหภูมิเฉลี่ย</p>
-                            <p class="text-xl font-bold">25-35 °C</p>
+                            <div class="font-display text-3xl font-bold text-white"><span class="count" data-target="50" data-suffix="+">0</span></div>
+                            <div class="text-xs text-indigo-200 mt-1">เกษตรกรร่วมโครงการ</div>
+                        </div>
+                        <div>
+                            <div class="font-display text-3xl font-bold text-white"><span class="count" data-target="16">0</span></div>
+                            <div class="text-xs text-indigo-200 mt-1">หมู่บ้านที่ถ่ายทอด</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual -->
+                <div class="reveal relative">
+                    <div class="relative animate-floaty">
+                        <div class="absolute -inset-4 bg-gradient-to-tr from-brand/40 to-teal/40 rounded-[2rem] blur-2xl"></div>
+                        <img src="images/img_27.jpeg" alt="ตู้เลี้ยงจิ้งหรีดอัตโนมัติต้นแบบ พร้อมหลอดไฟอินฟราเรดและกล่องควบคุม"
+                             class="relative rounded-[1.75rem] device-shadow border border-white/10 w-full object-cover">
+                        <!-- floating temp chip -->
+                        <div class="absolute -left-4 sm:-left-6 top-8 glass text-slate-800 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
+                            <span class="grid place-items-center w-9 h-9 rounded-xl bg-teal/15 text-teal">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v10.55a4 4 0 102 0V3a1 1 0 10-2 0z"/></svg>
+                            </span>
+                            <div>
+                                <div class="text-xs text-slate-500">อุณหภูมิเฉลี่ย</div>
+                                <div class="font-display font-bold text-lg leading-none">25–35°C</div>
+                            </div>
+                        </div>
+                        <!-- floating live chip -->
+                        <div class="absolute -right-3 sm:-right-5 bottom-10 glass text-slate-800 rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3">
+                            <span class="grid place-items-center w-9 h-9 rounded-xl bg-brand/15 text-brand">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"/></svg>
+                            </span>
+                            <div>
+                                <div class="text-xs text-slate-500">เชื่อมต่อ Blynk</div>
+                                <div class="font-display font-bold text-sm leading-none text-teal">ออนไลน์ · เรียลไทม์</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <a href="#abstract" class="text-white/50 hover:text-white transition-colors">
-                <i class="fa-solid fa-chevron-down text-2xl"></i>
+        <!-- wave -->
+        <div class="absolute bottom-0 inset-x-0 leading-none">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full"><path d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120Z" fill="#F8FAFC"/></svg>
+        </div>
+    </section>
+
+    <!-- ===== Key Numbers band ===== -->
+    <section class="bg-slate-50 -mt-2">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 reveal">
+                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center card-hover">
+                    <div class="font-display text-3xl md:text-4xl font-bold text-brand"><span class="count" data-target="4.47" data-decimals="2">0</span></div>
+                    <p class="text-sm text-slate-500 mt-1">ประสิทธิภาพ (ผู้เชี่ยวชาญ)</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center card-hover">
+                    <div class="font-display text-3xl md:text-4xl font-bold text-teal"><span class="count" data-target="2">0</span></div>
+                    <p class="text-sm text-slate-500 mt-1">เซนเซอร์ DHT11 (หัว–ท้าย)</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center card-hover">
+                    <div class="font-display text-3xl md:text-4xl font-bold text-brand">24/7</div>
+                    <p class="text-sm text-slate-500 mt-1">ควบคุมอัตโนมัติต่อเนื่อง</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center card-hover">
+                    <div class="font-display text-3xl md:text-4xl font-bold text-teal"><span class="count" data-target="5">0</span>s</div>
+                    <p class="text-sm text-slate-500 mt-1">อัปเดตค่าทุก 5 วินาที</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Abstract ===== -->
+    <section id="abstract" class="py-20 md:py-28">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 reveal">
+                <span class="text-sm font-semibold tracking-widest text-teal uppercase">Abstract</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-ink mt-2">บทคัดย่อและวัตถุประสงค์</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand to-teal mx-auto mt-5 rounded-full"></div>
+            </div>
+
+            <div class="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-slate-100 reveal">
+                <p class="text-slate-600 leading-loose text-lg mb-6">
+                    งานวิจัยนี้เป็นการวิจัยและพัฒนา (R&amp;D) ร่วมกับแนวทางการวิจัยเชิงปฏิบัติการแบบมีส่วนร่วม (PAR)
+                    มุ่งพัฒนา <strong class="text-ink">ตู้เลี้ยงจิ้งหรีดอัตโนมัติ</strong> ที่ควบคุมอุณหภูมิและความชื้นภายในตู้แบบเรียลไทม์
+                    โดยใช้บอร์ด <strong class="text-brand">NodeMCU ESP8266</strong> ร่วมกับเซนเซอร์ <strong class="text-brand">DHT11</strong> จำนวน 2 ตัว
+                    สั่งงานพัดลมและหลอดไฟอินฟราเรดผ่านโมดูลรีเลย์ และแสดงผล/สั่งการระยะไกลผ่านแอปพลิเคชัน <strong class="text-teal">Blynk</strong> บนสมาร์ตโฟน
+                </p>
+
+                <div class="grid sm:grid-cols-2 gap-4 mt-8">
+                    <div class="flex gap-4 p-5 rounded-2xl bg-indigo-50/60">
+                        <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-brand text-white font-display font-bold">1</span>
+                        <p class="text-slate-600">สร้างองค์ความรู้การประยุกต์ใช้ IoT ในการควบคุมสภาพแวดล้อมการเลี้ยงจิ้งหรีด</p>
+                    </div>
+                    <div class="flex gap-4 p-5 rounded-2xl" style="background:#ecfeff">
+                        <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-teal text-white font-display font-bold">2</span>
+                        <p class="text-slate-600">ออกแบบและพัฒนาระบบควบคุมสภาพแวดล้อมภายในตู้เลี้ยงด้วยเทคโนโลยี IoT</p>
+                    </div>
+                    <div class="flex gap-4 p-5 rounded-2xl bg-indigo-50/60">
+                        <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-brand text-white font-display font-bold">3</span>
+                        <p class="text-slate-600">ถ่ายทอดเทคโนโลยีและองค์ความรู้สู่กลุ่มเกษตรกรในชุมชน</p>
+                    </div>
+                    <div class="flex gap-4 p-5 rounded-2xl" style="background:#ecfeff">
+                        <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-teal text-white font-display font-bold">4</span>
+                        <p class="text-slate-600">ประเมินประสิทธิภาพและความพึงพอใจต่อระบบจากผู้เชี่ยวชาญและเกษตรกร</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Problem / Motivation ===== -->
+    <section id="problem" class="py-20 md:py-28 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div class="reveal order-2 lg:order-1">
+                    <div class="rounded-3xl bg-slate-50 border border-slate-100 p-4 md:p-6 shadow-sm">
+                        <img src="images/img_19.png" alt="แผนภาพก้างปลา วิเคราะห์ปัญหาการเลี้ยงจิ้งหรีดแบบดั้งเดิม" class="rounded-2xl w-full">
+                        <p class="text-center text-xs text-slate-400 mt-3">แผนภาพก้างปลา (Cause &amp; Effect) วิเคราะห์ปัญหาการเลี้ยงจิ้งหรีดแบบดั้งเดิม</p>
+                    </div>
+                </div>
+                <div class="reveal order-1 lg:order-2">
+                    <span class="text-sm font-semibold tracking-widest text-teal uppercase">The Problem</span>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold text-ink mt-2 mb-5">ที่มาและความสำคัญ</h2>
+                    <p class="text-slate-600 leading-relaxed mb-8">
+                        การเลี้ยงจิ้งหรีดแบบดั้งเดิมต้องพึ่งพาแรงงานคนตลอดเวลา และเผชิญความผันผวนของอุณหภูมิ–ความชื้น
+                        ที่ส่งผลโดยตรงต่อการเจริญเติบโตและอัตราการรอด งานวิจัยจึงวิเคราะห์ปัญหาออกเป็น 3 มิติหลัก
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex gap-4 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm card-hover">
+                            <span class="shrink-0 grid place-items-center w-12 h-12 rounded-xl bg-rose-100 text-rose-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>
+                            <div><h4 class="font-display font-semibold text-ink">ด้านบุคคล</h4><p class="text-sm text-slate-500">ขาดความรู้ในการควบคุมสภาพแวดล้อม และต้องเฝ้าดูแลด้วยตนเองตลอดเวลา</p></div>
+                        </div>
+                        <div class="flex gap-4 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm card-hover">
+                            <span class="shrink-0 grid place-items-center w-12 h-12 rounded-xl bg-amber-100 text-amber-500"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>
+                            <div><h4 class="font-display font-semibold text-ink">ด้านเครื่องจักรและอุปกรณ์</h4><p class="text-sm text-slate-500">ไม่มีระบบควบคุมอุณหภูมิ–ความชื้นอัตโนมัติ และเครื่องมือวัดที่ทันสมัย</p></div>
+                        </div>
+                        <div class="flex gap-4 p-5 rounded-2xl border border-slate-100 bg-white shadow-sm card-hover">
+                            <span class="shrink-0 grid place-items-center w-12 h-12 rounded-xl text-teal" style="background:#ccfbf1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg></span>
+                            <div><h4 class="font-display font-semibold text-ink">ด้านสิ่งแวดล้อม</h4><p class="text-sm text-slate-500">อุณหภูมิภายนอกเปลี่ยนแปลงตลอดวัน โดยเฉพาะฤดูหนาวที่ทำให้จิ้งหรีดโตช้า</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== System / Methodology ===== -->
+    <section id="system" class="py-20 md:py-28">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="text-sm font-semibold tracking-widest text-teal uppercase">System Architecture</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-ink mt-2">สถาปัตยกรรมและการทำงานของระบบ</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand to-teal mx-auto mt-5 rounded-full"></div>
+            </div>
+
+            <!-- architecture diagram -->
+            <div class="reveal bg-white rounded-3xl border border-slate-100 shadow-sm p-5 md:p-10 mb-10">
+                <img src="images/img_20.png" alt="แผนภาพสถาปัตยกรรมระบบ IoT: DHT11, NodeMCU ESP8266, รีเลย์, พัดลม, หลอดไฟ และ Blynk" class="w-full max-w-4xl mx-auto">
+            </div>
+
+            <!-- 3 working steps -->
+            <div class="grid md:grid-cols-3 gap-6 mb-14">
+                <div class="reveal bg-white rounded-2xl p-7 border border-slate-100 shadow-sm card-hover">
+                    <span class="grid place-items-center w-12 h-12 rounded-xl bg-brand/10 text-brand font-display font-bold text-xl mb-5">1</span>
+                    <h4 class="font-display text-lg font-semibold text-ink mb-2">ตรวจวัด (Sense)</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">เซนเซอร์ DHT11 จำนวน 2 ตัว ติดตั้งที่ส่วนหัวและส่วนท้ายของตู้ ตรวจวัดอุณหภูมิและความชื้นแบบเรียลไทม์</p>
+                </div>
+                <div class="reveal bg-white rounded-2xl p-7 border border-slate-100 shadow-sm card-hover">
+                    <span class="grid place-items-center w-12 h-12 rounded-xl bg-teal/10 text-teal font-display font-bold text-xl mb-5">2</span>
+                    <h4 class="font-display text-lg font-semibold text-ink mb-2">ประมวลผลและสั่งการ (Process)</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">NodeMCU ESP8266 คำนวณค่าเฉลี่ย แล้วสั่งเปิด–ปิดพัดลมหรือหลอดไฟอินฟราเรดผ่านรีเลย์ เพื่อรักษาอุณหภูมิ 25–35°C</p>
+                </div>
+                <div class="reveal bg-white rounded-2xl p-7 border border-slate-100 shadow-sm card-hover">
+                    <span class="grid place-items-center w-12 h-12 rounded-xl bg-brand/10 text-brand font-display font-bold text-xl mb-5">3</span>
+                    <h4 class="font-display text-lg font-semibold text-ink mb-2">เชื่อมต่อและแจ้งเตือน (Connect)</h4>
+                    <p class="text-slate-500 text-sm leading-relaxed">ส่งข้อมูลขึ้น Blynk Cloud แสดงผลและสั่งงานจากระยะไกล พร้อมแจ้งเตือนเมื่อค่าเกินเกณฑ์ที่กำหนด</p>
+                </div>
+            </div>
+
+            <!-- hardware components -->
+            <h3 class="font-display text-xl font-semibold text-ink text-center mb-8 reveal">อุปกรณ์หลักในระบบ</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 reveal">
+                <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden card-hover">
+                    <div class="aspect-[4/3] overflow-hidden bg-slate-50"><img src="images/img_30.jpeg" alt="เซนเซอร์ DHT11" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>
+                    <div class="p-4"><h4 class="font-semibold text-ink text-sm">เซนเซอร์ DHT11 ×2</h4><p class="text-xs text-slate-400">วัดอุณหภูมิ–ความชื้น</p></div>
+                </div>
+                <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden card-hover">
+                    <div class="aspect-[4/3] overflow-hidden bg-slate-50"><img src="images/img_16.png" alt="จอ LCD 16x2 I2C" class="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500"></div>
+                    <div class="p-4"><h4 class="font-semibold text-ink text-sm">จอ LCD 16×2 (I2C)</h4><p class="text-xs text-slate-400">แสดงค่าหน้าตู้</p></div>
+                </div>
+                <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden card-hover">
+                    <div class="aspect-[4/3] overflow-hidden bg-slate-50"><img src="images/img_50.jpeg" alt="พัดลมระบายความร้อน 10 นิ้ว" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>
+                    <div class="p-4"><h4 class="font-semibold text-ink text-sm">พัดลมระบายอากาศ 10"</h4><p class="text-xs text-slate-400">ลดอุณหภูมิอัตโนมัติ</p></div>
+                </div>
+                <div class="group bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden card-hover">
+                    <div class="aspect-[4/3] overflow-hidden bg-slate-50"><img src="images/img_18.png" alt="Switching Power Supply" class="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"></div>
+                    <div class="p-4"><h4 class="font-semibold text-ink text-sm">Power Supply 12V</h4><p class="text-xs text-slate-400">AC220→DC12V · 450W</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Cabinet design ===== -->
+    <section class="py-20 md:py-28 bg-gradient-to-br from-brandDark to-[#1E1B4B] text-white relative overflow-hidden">
+        <div class="absolute inset-0 grid-overlay opacity-30"></div>
+        <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-teal/20 blur-3xl"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div class="reveal">
+                    <span class="text-sm font-semibold tracking-widest text-tealLight uppercase">Prototype Design</span>
+                    <h2 class="font-display text-3xl md:text-4xl font-bold mt-2 mb-5">การออกแบบตู้เลี้ยงต้นแบบ</h2>
+                    <p class="text-indigo-100/80 leading-relaxed mb-8">
+                        โครงสร้างเหล็กแข็งแรง ปิดผนังด้วยแผ่นยิปซัมเพื่อรักษาอุณหภูมิและความชื้น ออกแบบให้เหมาะกับการเลี้ยงระดับครัวเรือน
+                        ยกสูงจากพื้นเพื่อป้องกันความชื้นและสัตว์รบกวน ภายในรองรับแผงไข่ไก่สำหรับเป็นที่หลบซ่อนและขยายพันธุ์
+                    </p>
+                    <div class="grid grid-cols-3 gap-4 mb-8">
+                        <div class="rounded-2xl bg-white/10 border border-white/15 p-4 text-center backdrop-blur-sm">
+                            <div class="font-display text-2xl font-bold text-tealLight">60×120</div><div class="text-xs text-indigo-200 mt-1">กว้าง×ยาว (ซม.)</div>
+                        </div>
+                        <div class="rounded-2xl bg-white/10 border border-white/15 p-4 text-center backdrop-blur-sm">
+                            <div class="font-display text-2xl font-bold text-tealLight">60</div><div class="text-xs text-indigo-200 mt-1">สูง (ซม.)</div>
+                        </div>
+                        <div class="rounded-2xl bg-white/10 border border-white/15 p-4 text-center backdrop-blur-sm">
+                            <div class="font-display text-2xl font-bold text-tealLight">30</div><div class="text-xs text-indigo-200 mt-1">ยกสูงจากพื้น (ซม.)</div>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-indigo-100/90 text-sm">
+                        <li class="flex gap-3"><svg class="w-5 h-5 text-tealLight shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> พัดลมระบายอากาศและหลอดไฟอินฟราเรดควบคุมอุณหภูมิทั้งสองทิศทาง</li>
+                        <li class="flex gap-3"><svg class="w-5 h-5 text-tealLight shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> กล่องควบคุมอิเล็กทรอนิกส์ติดตั้งด้านข้าง สะดวกต่อการบำรุงรักษา</li>
+                        <li class="flex gap-3"><svg class="w-5 h-5 text-tealLight shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg> รองรับระบบน้ำและอาหารภายในตู้</li>
+                    </ul>
+                </div>
+                <div class="reveal grid grid-cols-2 gap-4">
+                    <img src="images/img_27.jpeg" alt="ตู้เลี้ยงจิ้งหรีดต้นแบบของจริง" class="col-span-2 rounded-2xl shadow-2xl border border-white/10">
+                    <img src="images/img_21.png" alt="แบบจำลอง 3 มิติของตู้เลี้ยงจิ้งหรีด" class="rounded-2xl shadow-xl border border-white/10 bg-white">
+                    <img src="images/img_35.jpeg" alt="ภายในตู้: แผงไข่ไก่และระบบให้น้ำ" class="rounded-2xl shadow-xl border border-white/10 object-cover h-full w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Dashboard / Blynk ===== -->
+    <section id="dashboard" class="py-20 md:py-28">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="text-sm font-semibold tracking-widest text-teal uppercase">IoT Dashboard</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-ink mt-2">ควบคุมและติดตามผ่านแอป Blynk</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand to-teal mx-auto mt-5 rounded-full"></div>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8 items-center">
+                <!-- web dashboard -->
+                <div class="lg:col-span-7 reveal">
+                    <div class="rounded-3xl bg-slate-900 p-3 md:p-4 shadow-2xl">
+                        <div class="flex gap-1.5 px-2 py-2">
+                            <span class="w-3 h-3 rounded-full bg-rose-400"></span><span class="w-3 h-3 rounded-full bg-amber-400"></span><span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+                        </div>
+                        <img src="images/img_37.png" alt="หน้าจอแดชบอร์ด Blynk บนเว็บ แสดงอุณหภูมิหัว/ท้าย/เฉลี่ย และปุ่มควบคุม" class="rounded-xl w-full">
+                    </div>
+                    <p class="text-center text-xs text-slate-400 mt-3">แดชบอร์ดบนเว็บ — แสดงอุณหภูมิส่วนหัว ส่วนท้าย และค่าเฉลี่ย พร้อมปุ่มควบคุมพัดลม/ไฟ และโหมดอัตโนมัติ</p>
+                </div>
+
+                <!-- mobile + features -->
+                <div class="lg:col-span-5 reveal">
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-8 items-center">
+                        <img src="images/img_38.png" alt="แอปพลิเคชัน Blynk บนสมาร์ตโฟน" class="w-44 shrink-0 rounded-3xl shadow-xl border border-slate-100">
+                        <div class="space-y-4 w-full">
+                            <div class="flex gap-3 items-start">
+                                <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-teal/10 text-teal"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
+                                <div><h4 class="font-semibold text-ink text-sm">แสดงผลเรียลไทม์</h4><p class="text-xs text-slate-500">ค่าหัว–ท้าย–เฉลี่ย อัปเดตทุก 5 วินาที</p></div>
+                            </div>
+                            <div class="flex gap-3 items-start">
+                                <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-brand/10 text-brand"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>
+                                <div><h4 class="font-semibold text-ink text-sm">เลือกประเภทตู้</h4><p class="text-xs text-slate-500">ตัวอ่อน (27–32°C) / ตัวเต็มวัย (25–35°C) ปรับช่วงอัตโนมัติ</p></div>
+                            </div>
+                            <div class="flex gap-3 items-start">
+                                <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-teal/10 text-teal"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                                <div><h4 class="font-semibold text-ink text-sm">โหมดอัตโนมัติ / สั่งเอง</h4><p class="text-xs text-slate-500">สลับควบคุมพัดลมและไฟได้ตามต้องการ</p></div>
+                            </div>
+                            <div class="flex gap-3 items-start">
+                                <span class="shrink-0 grid place-items-center w-9 h-9 rounded-lg bg-brand/10 text-brand"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg></span>
+                                <div><h4 class="font-semibold text-ink text-sm">แจ้งเตือนเมื่อค่าผิดปกติ</h4><p class="text-xs text-slate-500">เตือนทันทีเมื่ออุณหภูมิ/ความชื้นเกินเกณฑ์</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Results ===== -->
+    <section id="results" class="py-20 md:py-28 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="text-sm font-semibold tracking-widest text-teal uppercase">Key Results</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-ink mt-2">ผลการประเมินและประสิทธิภาพ</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand to-teal mx-auto mt-5 rounded-full"></div>
+            </div>
+
+            <!-- big stat cards -->
+            <div class="grid md:grid-cols-3 gap-6 mb-16">
+                <div class="reveal rounded-3xl p-8 bg-gradient-to-br from-brand to-indigo-600 text-white shadow-xl shadow-indigo-500/20 card-hover">
+                    <svg class="w-9 h-9 mb-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="font-display text-5xl font-extrabold mb-1"><span class="count" data-target="4.47" data-decimals="2">0</span></div>
+                    <p class="font-medium">ประสิทธิภาพระบบ (ผู้เชี่ยวชาญ)</p>
+                    <p class="text-sm text-indigo-100/80 mt-3">ประเมินโดยผู้เชี่ยวชาญ IT 3 ท่าน อยู่ในระดับ <strong>ดี</strong> (S.D. = 0.54)</p>
+                </div>
+                <div class="reveal rounded-3xl p-8 bg-gradient-to-br from-teal to-emerald-500 text-white shadow-xl shadow-teal/20 card-hover">
+                    <svg class="w-9 h-9 mb-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <div class="font-display text-5xl font-extrabold mb-1"><span class="count" data-target="4.49" data-decimals="2">0</span></div>
+                    <p class="font-medium">ความพึงพอใจของเกษตรกร</p>
+                    <p class="text-sm text-emerald-50/80 mt-3">จากเกษตรกร 50 คน อยู่ในระดับ <strong>ดี</strong> (S.D. = 0.49)</p>
+                </div>
+                <div class="reveal rounded-3xl p-8 bg-slate-900 text-white shadow-xl card-hover">
+                    <svg class="w-9 h-9 mb-5 opacity-80 text-tealLight" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v10.55a4 4 0 102 0V3a1 1 0 10-2 0z"/></svg>
+                    <div class="font-display text-5xl font-extrabold mb-1">25–35<span class="text-2xl align-top">°C</span></div>
+                    <p class="font-medium">ควบคุมอุณหภูมิได้เสถียร</p>
+                    <p class="text-sm text-slate-300/80 mt-3">รักษาช่วงที่เหมาะสมตลอดเวลา ลดภาระแรงงานและการสูญเสียจากอากาศเย็น</p>
+                </div>
+            </div>
+
+            <!-- satisfaction breakdown -->
+            <div class="grid lg:grid-cols-2 gap-10 items-center">
+                <div class="reveal">
+                    <h3 class="font-display text-xl font-semibold text-ink mb-2">ความพึงพอใจรายด้าน (เต็ม 5.00)</h3>
+                    <p class="text-sm text-slate-500 mb-7">ผลประเมินจากเกษตรกร 50 คน — ด้านประโยชน์ที่ได้รับและการออกแบบตู้อยู่ในระดับ <strong class="text-teal">ดีมาก</strong></p>
+                    <div class="space-y-5">
+                        <div class="bar" data-val="4.58"><div class="flex justify-between text-sm mb-1.5"><span class="font-medium text-ink">ด้านประโยชน์ที่ได้รับ</span><span class="font-display font-bold text-teal">4.58</span></div><div class="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-teal to-emerald-400" style="width:0"></div></div></div>
+                        <div class="bar" data-val="4.52"><div class="flex justify-between text-sm mb-1.5"><span class="font-medium text-ink">ด้านการออกแบบตู้เลี้ยง</span><span class="font-display font-bold text-teal">4.52</span></div><div class="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-teal to-emerald-400" style="width:0"></div></div></div>
+                        <div class="bar" data-val="4.45"><div class="flex justify-between text-sm mb-1.5"><span class="font-medium text-ink">ด้านความรวดเร็วของระบบ</span><span class="font-display font-bold text-brand">4.45</span></div><div class="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-brand to-indigo-400" style="width:0"></div></div></div>
+                        <div class="bar" data-val="4.41"><div class="flex justify-between text-sm mb-1.5"><span class="font-medium text-ink">ด้านความถูกต้องของการทำงาน</span><span class="font-display font-bold text-brand">4.41</span></div><div class="h-2.5 rounded-full bg-slate-100 overflow-hidden"><div class="bar-fill h-full rounded-full bg-gradient-to-r from-brand to-indigo-400" style="width:0"></div></div></div>
+                    </div>
+                </div>
+
+                <div class="reveal rounded-3xl border border-slate-100 bg-slate-50 p-8 shadow-sm">
+                    <h3 class="font-display text-xl font-semibold text-ink mb-5">จุดเด่นเทียบงานวิจัยอื่น</h3>
+                    <p class="text-sm text-slate-600 leading-relaxed mb-6">ระบบของผู้วิจัยโดดเด่นด้าน <strong class="text-brand">การควบคุมสภาพแวดล้อมแบบปิดวงจร (Closed-loop)</strong> ซึ่งเป็นปัจจัยสำคัญที่สุดต่อการเจริญเติบโตของจิ้งหรีด</p>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex gap-3 items-start"><svg class="w-5 h-5 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span class="text-slate-600">ควบคุมอุณหภูมิอัตโนมัติแบบเรียลไทม์ ไม่ใช่เพียงตรวจวัด–แจ้งเตือน</span></li>
+                        <li class="flex gap-3 items-start"><svg class="w-5 h-5 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span class="text-slate-600">เพิ่มอัตราการรอด ลดระยะเวลาเลี้ยง โดยเฉพาะในฤดูหนาว</span></li>
+                        <li class="flex gap-3 items-start"><svg class="w-5 h-5 text-teal shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg><span class="text-slate-600">ต้นทุนต่ำ ใช้งานง่าย เหมาะกับเกษตรกรระดับครัวเรือน</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== Community / Technology Transfer ===== -->
+    <section id="community" class="py-20 md:py-28">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="text-sm font-semibold tracking-widest text-teal uppercase">Technology Transfer</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-ink mt-2">การถ่ายทอดเทคโนโลยีสู่ชุมชน</h2>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto">จัดกิจกรรมถ่ายทอดความรู้แก่เกษตรกรจาก 16 หมู่บ้านในตำบลหนองใหญ่ รวมกว่า 50 คน พร้อมติดตั้งระบบต้นแบบเป็นศูนย์เรียนรู้ในพื้นที่จริง</p>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand to-teal mx-auto mt-5 rounded-full"></div>
+            </div>
+
+            <!-- gallery -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 reveal">
+                <div class="lg:row-span-2 lg:col-span-2 rounded-2xl overflow-hidden shadow-sm border border-slate-100 group">
+                    <img src="images/img_25.jpeg" alt="กิจกรรมบรรยายถ่ายทอดเทคโนโลยีแก่เกษตรกร" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="rounded-2xl overflow-hidden shadow-sm border border-slate-100 group aspect-square">
+                    <img src="images/img_26.jpeg" alt="เกษตรกรทดลองใช้งานแอปและตู้เลี้ยง" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="rounded-2xl overflow-hidden shadow-sm border border-slate-100 group aspect-square">
+                    <img src="images/img_45.jpeg" alt="ผลผลิตจิ้งหรีดที่เก็บเกี่ยวได้" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="rounded-2xl overflow-hidden shadow-sm border border-slate-100 group aspect-square">
+                    <img src="images/img_41.jpeg" alt="ลงพื้นที่ติดตั้งระบบในฟาร์มเกษตรกร" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
+                <div class="rounded-2xl overflow-hidden shadow-sm border border-slate-100 group aspect-square">
+                    <img src="images/img_42.jpeg" alt="คณะผู้วิจัยเยี่ยมชมฟาร์มจิ้งหรีดในชุมชน" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </div>
+            </div>
+
+            <!-- testimonial -->
+            <figure class="reveal max-w-3xl mx-auto text-center mt-16">
+                <svg class="w-10 h-10 mx-auto text-teal/30 mb-4" fill="currentColor" viewBox="0 0 24 24"><path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z"/></svg>
+                <blockquote class="font-display text-xl md:text-2xl text-ink leading-relaxed">
+                    “ระบบนี้ดีตรงที่ไม่ต้องคอยเปิดไฟเองตอนอากาศเย็น มันเปิดเองอัตโนมัติ ทำให้ไม่ต้องเฝ้าทั้งวัน จิ้งหรีดก็แข็งแรง โตไวกว่าเดิมเยอะ”
+                </blockquote>
+                <figcaption class="mt-5 text-sm text-slate-500">— เกษตรกรผู้เข้าร่วมโครงการ ต.หนองใหญ่ อ.สตึก จ.บุรีรัมย์</figcaption>
+            </figure>
+        </div>
+    </section>
+
+    <!-- ===== Researchers ===== -->
+    <section id="researchers" class="py-20 md:py-28 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-14 reveal">
+                <span class="text-sm font-semibold tracking-widest text-teal uppercase">Research Team</span>
+                <h2 class="font-display text-3xl md:text-4xl font-bold text-ink mt-2">คณะผู้วิจัย</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-brand to-teal mx-auto mt-5 rounded-full"></div>
+            </div>
+
+            <div class="grid sm:grid-cols-3 gap-8">
+                <!-- Lead -->
+                <div class="reveal text-center bg-slate-50 rounded-3xl p-8 border border-slate-100 card-hover">
+                    <div class="w-32 h-32 mx-auto rounded-full grid place-items-center mb-6 shadow-lg ring-4 ring-white bg-gradient-to-br from-brand to-indigo-600">
+                        <span class="font-display text-4xl font-bold text-white">ปร</span>
+                    </div>
+                    <span class="inline-block text-xs font-semibold text-brand bg-brand/10 px-3 py-1 rounded-full mb-3">หัวหน้าโครงการ</span>
+                    <h3 class="font-display text-lg font-bold text-ink">เปรม อิงคเวชชากุล</h3>
+                    <p class="text-sm text-slate-500 mt-1">คณะวิทยาศาสตร์<br>มหาวิทยาลัยราชภัฏบุรีรัมย์</p>
+                </div>
+                <!-- Co 1 -->
+                <div class="reveal text-center bg-slate-50 rounded-3xl p-8 border border-slate-100 card-hover">
+                    <div class="w-32 h-32 mx-auto rounded-full grid place-items-center mb-6 shadow-lg ring-4 ring-white bg-gradient-to-br from-teal to-emerald-500">
+                        <span class="font-display text-4xl font-bold text-white">กต</span>
+                    </div>
+                    <span class="inline-block text-xs font-semibold text-teal bg-teal/10 px-3 py-1 rounded-full mb-3">ผู้วิจัยร่วม</span>
+                    <h3 class="font-display text-lg font-bold text-ink">กิตติคุณ บุญเกตุ</h3>
+                    <p class="text-sm text-slate-500 mt-1">คณะวิทยาศาสตร์<br>มหาวิทยาลัยราชภัฏบุรีรัมย์</p>
+                </div>
+                <!-- Co 2 (real photo) -->
+                <div class="reveal text-center bg-slate-50 rounded-3xl p-8 border border-slate-100 card-hover">
+                    <div class="w-32 h-32 mx-auto rounded-full overflow-hidden mb-6 shadow-lg ring-4 ring-white bg-slate-200">
+                        <img src="images/img_1.png" alt="อาจารย์ ดร.กรกช ศิลปกอบ" class="w-full h-full object-cover object-top">
+                    </div>
+                    <span class="inline-block text-xs font-semibold text-brand bg-brand/10 px-3 py-1 rounded-full mb-3">ผู้วิจัยร่วม</span>
+                    <h3 class="font-display text-lg font-bold text-ink">ดร.กรกช ศิลปกอบ</h3>
+                    <p class="text-sm text-slate-500 mt-1">กลุ่มวิชาหลักสูตรและวิธีการสอน<br>มหาวิทยาลัยราชภัฏบุรีรัมย์</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CTA strip ===== -->
+    <section class="py-16 bg-gradient-to-r from-brand to-teal text-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center reveal">
+            <h2 class="font-display text-2xl md:text-3xl font-bold mb-3">นวัตกรรมเพื่อส่งเสริมอาชีพเกษตรกรอย่างยั่งยืน</h2>
+            <p class="text-white/85 max-w-2xl mx-auto mb-7">โครงการต้นแบบ “ฟาร์มจิ้งหรีดอัจฉริยะ” ที่พร้อมขยายผลสู่ครัวเรือนและชุมชนใกล้เคียง</p>
+            <a href="#top" class="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white text-brand font-semibold shadow-lg hover:-translate-y-0.5 transition-all">
+                กลับสู่ด้านบน
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
             </a>
         </div>
     </section>
 
-    <!-- Abstract Section -->
-    <section id="abstract" class="py-24 bg-white relative">
+    <!-- ===== Footer ===== -->
+    <footer class="bg-slate-900 text-slate-400 pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h3 class="text-secondary font-bold tracking-wider uppercase text-sm mb-2">Abstract</h3>
-                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">ภาพรวมและวัตถุประสงค์</h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-secondary to-accent mx-auto rounded-full"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-                <div class="grid grid-cols-2 gap-4">
-                    <img src="images/img_43.jpeg" alt="Cricket Farm 1" class="rounded-2xl shadow-lg w-full h-48 object-cover transform translate-y-8" onerror="this.src='https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&q=80&w=400'">
-                    <img src="images/img_44.jpeg" alt="Cricket Farm 2" class="rounded-2xl shadow-lg w-full h-48 object-cover" onerror="this.src='https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=400'">
-                </div>
-                <div class="space-y-6">
-                    <p class="text-gray-600 leading-relaxed text-lg text-justify">
-                        งานวิจัยนี้มุ่งเน้นแก้ปัญหาการควบคุมสภาพแวดล้อมในการเลี้ยงจิ้งหรีด ซึ่งเป็นปัจจัยสำคัญต่ออัตราการรอดและผลผลิต โดยมีวัตถุประสงค์หลักเพื่อ:
-                    </p>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-4">
-                            <div class="mt-1 w-6 h-6 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-                                <i class="fa-solid fa-check text-xs"></i>
-                            </div>
-                            <span class="text-gray-700">สร้างองค์ความรู้เกี่ยวกับการประยุกต์ใช้เทคโนโลยี IoT ในฟาร์ม</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <div class="mt-1 w-6 h-6 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-                                <i class="fa-solid fa-check text-xs"></i>
-                            </div>
-                            <span class="text-gray-700">ออกแบบและพัฒนาตู้เลี้ยงจิ้งหรีดอัตโนมัติ ควบคุมอุณหภูมิ-ความชื้น</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <div class="mt-1 w-6 h-6 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-                                <i class="fa-solid fa-check text-xs"></i>
-                            </div>
-                            <span class="text-gray-700">ถ่ายทอดเทคโนโลยีและองค์ความรู้ให้กับกลุ่มเกษตรกรในชุมชน</span>
-                        </li>
-                        <li class="flex items-start gap-4">
-                            <div class="mt-1 w-6 h-6 rounded-full bg-secondary/10 flex items-center justify-center text-secondary flex-shrink-0">
-                                <i class="fa-solid fa-check text-xs"></i>
-                            </div>
-                            <span class="text-gray-700">ประเมินประสิทธิภาพและความพึงพอใจต่อระบบที่พัฒนา</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Methodology Section -->
-    <section id="methodology" class="py-24 bg-gray-50 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h3 class="text-accent font-bold tracking-wider uppercase text-sm mb-2">Methodology</h3>
-                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">ระเบียบวิธีและสถาปัตยกรรมระบบ</h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-accent to-secondary mx-auto rounded-full"></div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                <div class="order-2 lg:order-1">
-                    <div class="relative">
-                        <!-- Connecting Line -->
-                        <div class="absolute left-6 top-10 bottom-10 w-0.5 bg-gradient-to-b from-secondary to-accent opacity-30"></div>
-                        
-                        <div class="space-y-10 relative">
-                            <!-- Step 1 -->
-                            <div class="flex gap-6 items-start glass-card p-6 rounded-2xl relative bg-white">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-emerald-600 flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-lg shadow-secondary/40 z-10">
-                                    <i class="fa-solid fa-microchip"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-xl font-bold text-gray-800 mb-2">การออกแบบฮาร์ดแวร์ (Hardware)</h4>
-                                    <p class="text-gray-600 text-sm leading-relaxed">ใช้ไมโครคอนโทรลเลอร์ NodeMCU ESP8266 เป็นศูนย์กลางประมวลผล รับข้อมูลจากเซนเซอร์ DHT11 เพื่อตรวจจับอุณหภูมิและความชื้นภายในตู้เลี้ยง</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Step 2 -->
-                            <div class="flex gap-6 items-start glass-card p-6 rounded-2xl relative bg-white">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-blue-600 flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-lg shadow-accent/40 z-10">
-                                    <i class="fa-solid fa-gears"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-xl font-bold text-gray-800 mb-2">ระบบควบคุมอัตโนมัติ (Control)</h4>
-                                    <p class="text-gray-600 text-sm leading-relaxed">สั่งงานพัดลมระบายอากาศและหลอดไฟอินฟราเรด ผ่านโมดูลรีเลย์ เพื่อรักษาช่วงอุณหภูมิที่เหมาะสม (25–35 °C) อัตโนมัติ</p>
-                                </div>
-                            </div>
-
-                            <!-- Step 3 -->
-                            <div class="flex gap-6 items-start glass-card p-6 rounded-2xl relative bg-white">
-                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-bold text-xl flex-shrink-0 shadow-lg shadow-amber-500/40 z-10">
-                                    <i class="fa-solid fa-mobile-screen-button"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-xl font-bold text-gray-800 mb-2">แอปพลิเคชัน (IoT Dashboard)</h4>
-                                    <p class="text-gray-600 text-sm leading-relaxed">เชื่อมต่อผ่านแพลตฟอร์มคลาวด์ แสดงผลข้อมูลเรียลไทม์ และรองรับการสั่งงานระยะไกลผ่านแอปพลิเคชัน Blynk บนสมาร์ตโฟน</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="order-1 lg:order-2">
-                    <div class="bg-white p-4 rounded-3xl shadow-2xl border border-gray-100 transform rotate-1 hover:rotate-0 transition-transform duration-500">
-                        <img src="images/img_19.png" alt="Architecture Diagram" class="rounded-2xl w-full h-auto" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800'">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Key Results Section -->
-    <section id="results" class="py-24 bg-primary text-white relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h3 class="text-secondary font-bold tracking-wider uppercase text-sm mb-2">Key Results</h3>
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">ผลลัพธ์การทดลอง</h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-secondary to-accent mx-auto rounded-full"></div>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-                <div class="glass-panel p-8 rounded-3xl text-center transform hover:-translate-y-2 transition-all duration-300">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-secondary/20 text-secondary mb-6 text-2xl">
-                        <i class="fa-solid fa-temperature-arrow-up"></i>
-                    </div>
-                    <h3 class="text-5xl font-bold mb-2">25-35<span class="text-2xl text-gray-400">°C</span></h3>
-                    <p class="text-lg font-medium text-gray-200 mb-2">ควบคุมอุณหภูมิได้เสถียร</p>
-                    <p class="text-sm text-gray-400">ระบบรักษาอุณหภูมิคงที่ ช่วยลดอัตราการตายของจิ้งหรีด</p>
-                </div>
-
-                <div class="glass-panel p-8 rounded-3xl text-center transform hover:-translate-y-2 transition-all duration-300">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-accent/20 text-accent mb-6 text-2xl">
-                        <i class="fa-solid fa-user-tie"></i>
-                    </div>
-                    <h3 class="text-5xl font-bold mb-2">4.47<span class="text-2xl text-gray-400">/5</span></h3>
-                    <p class="text-lg font-medium text-gray-200 mb-2">ประสิทธิภาพ (ผู้เชี่ยวชาญ)</p>
-                    <p class="text-sm text-gray-400">ผลประเมินอยู่ในระดับ "ดี" (S.D. = 0.54) จากผู้เชี่ยวชาญ 3 ท่าน</p>
-                </div>
-
-                <div class="glass-panel p-8 rounded-3xl text-center transform hover:-translate-y-2 transition-all duration-300">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-500 mb-6 text-2xl">
-                        <i class="fa-solid fa-face-smile"></i>
-                    </div>
-                    <h3 class="text-5xl font-bold mb-2">4.49<span class="text-2xl text-gray-400">/5</span></h3>
-                    <p class="text-lg font-medium text-gray-200 mb-2">ความพึงพอใจ (เกษตรกร)</p>
-                    <p class="text-sm text-gray-400">จากเกษตรกร 50 คนที่เข้าร่วมใช้งาน อยู่ในระดับ "ดี" (S.D. = 0.49)</p>
-                </div>
-            </div>
-
-            <!-- Graphs Gallery -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="group relative overflow-hidden rounded-2xl glass-panel">
-                    <img src="images/img_37.png" alt="Graph Data 1" class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100 bg-white" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                        <span class="text-sm font-medium">ผลการบันทึกอุณหภูมิ</span>
-                    </div>
-                </div>
-                <div class="group relative overflow-hidden rounded-2xl glass-panel">
-                    <img src="images/img_38.png" alt="Graph Data 2" class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100 bg-white" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                        <span class="text-sm font-medium">ผลการบันทึกความชื้น</span>
-                    </div>
-                </div>
-                <div class="group relative overflow-hidden rounded-2xl glass-panel">
-                    <img src="images/img_39.png" alt="Graph Data 3" class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100 bg-white" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                        <span class="text-sm font-medium">เปรียบเทียบผลผลิต</span>
-                    </div>
-                </div>
-                <div class="group relative overflow-hidden rounded-2xl glass-panel">
-                    <img src="images/img_40.png" alt="Graph Data 4" class="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-500 opacity-80 group-hover:opacity-100 bg-white" onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=400'">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4">
-                        <span class="text-sm font-medium">ผลประเมินความพึงพอใจ</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Researchers Section -->
-    <section id="researchers" class="py-24 bg-white relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h3 class="text-secondary font-bold tracking-wider uppercase text-sm mb-2">Team</h3>
-                <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4">คณะผู้วิจัย</h2>
-                <div class="w-24 h-1 bg-gradient-to-r from-secondary to-accent mx-auto rounded-full"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-5xl mx-auto">
-                <!-- Profile 1 -->
-                <div class="text-center group">
-                    <div class="relative w-48 h-48 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-gradient-to-br from-secondary to-accent rounded-full transform group-hover:scale-105 transition-transform duration-300"></div>
-                        <img src="images/img_2.jpeg" alt="เปรม อิงคเวชชากุล" class="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] object-cover rounded-full border-4 border-white shadow-lg z-10 bg-gray-100" onerror="this.src='https://ui-avatars.com/api/?name=Prem&background=10B981&color=fff'">
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-1">อ.เปรม อิงคเวชชากุล</h3>
-                    <p class="text-secondary font-semibold mb-3">หัวหน้าโครงการวิจัย</p>
-                    <p class="text-sm text-gray-500">คณะวิทยาศาสตร์<br>มหาวิทยาลัยราชภัฏบุรีรัมย์</p>
-                </div>
-
-                <!-- Profile 2 -->
-                <div class="text-center group">
-                    <div class="relative w-48 h-48 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-gradient-to-br from-secondary to-accent rounded-full transform group-hover:scale-105 transition-transform duration-300"></div>
-                        <img src="images/img_3.jpeg" alt="กิตติคุณ บุญเกตุ" class="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] object-cover rounded-full border-4 border-white shadow-lg z-10 bg-gray-100" onerror="this.src='https://ui-avatars.com/api/?name=Kittikun&background=3B82F6&color=fff'">
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-1">อ.กิตติคุณ บุญเกตุ</h3>
-                    <p class="text-accent font-semibold mb-3">ผู้วิจัยร่วม</p>
-                    <p class="text-sm text-gray-500">คณะวิทยาศาสตร์<br>มหาวิทยาลัยราชภัฏบุรีรัมย์</p>
-                </div>
-
-                <!-- Profile 3 -->
-                <div class="text-center group">
-                    <div class="relative w-48 h-48 mx-auto mb-6">
-                        <div class="absolute inset-0 bg-gradient-to-br from-secondary to-accent rounded-full transform group-hover:scale-105 transition-transform duration-300"></div>
-                        <img src="images/img_1.png" alt="กรกช ศิลปกอบ" class="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] object-cover rounded-full border-4 border-white shadow-lg z-10 bg-gray-100" onerror="this.src='https://ui-avatars.com/api/?name=Korakoch&background=F59E0B&color=fff'">
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-1">อ.กรกช ศิลปกอบ</h3>
-                    <p class="text-amber-500 font-semibold mb-3">ผู้วิจัยร่วม</p>
-                    <p class="text-sm text-gray-500">คณะวิทยาศาสตร์<br>มหาวิทยาลัยราชภัฏบุรีรัมย์</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-gray-300 border-t border-gray-800 pt-16 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-12">
+            <div class="grid md:grid-cols-3 gap-10">
                 <div>
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-secondary to-accent flex items-center justify-center text-white font-bold shadow-lg">
-                            <i class="fa-solid fa-leaf text-sm"></i>
-                        </div>
-                        <span class="font-bold text-xl text-white">Smart Farm IoT</span>
+                    <div class="flex items-center gap-2.5 mb-4">
+                        <span class="grid place-items-center w-10 h-10 rounded-xl bg-gradient-to-br from-brand to-teal text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+                        </span>
+                        <span class="font-display font-bold text-white text-lg">Smart Cricket IoT</span>
                     </div>
-                    <p class="text-sm leading-relaxed text-gray-400 pr-4">
-                        ระบบควบคุมตู้เลี้ยงจิ้งหรีดอัตโนมัติ นวัตกรรมเพื่อส่งเสริมอาชีพเกษตรกรอย่างยั่งยืน ณ ชุมชนบ้านหนองใหญ่ จ.บุรีรัมย์
-                    </p>
+                    <p class="text-sm leading-relaxed">ระบบควบคุมตู้เลี้ยงจิ้งหรีดอัตโนมัติด้วยเทคโนโลยีอินเทอร์เน็ตของสรรพสิ่ง นวัตกรรมเพื่อเกษตรกรไทย</p>
                 </div>
-                
                 <div>
-                    <h4 class="text-lg font-bold text-white mb-6">หน่วยงาน</h4>
-                    <ul class="space-y-3 text-sm text-gray-400">
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-building text-secondary mt-1"></i>
-                            คณะวิทยาศาสตร์ มหาวิทยาลัยราชภัฏบุรีรัมย์
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <i class="fa-solid fa-location-dot text-secondary mt-1"></i>
-                            439 ถ.จิระ ต.ในเมือง อ.เมือง จ.บุรีรัมย์ 31000
-                        </li>
-                    </ul>
+                    <h4 class="font-display font-semibold text-white mb-4">หน่วยงาน</h4>
+                    <p class="text-sm leading-relaxed">คณะวิทยาศาสตร์<br>มหาวิทยาลัยราชภัฏบุรีรัมย์<br>พ.ศ. 2568</p>
                 </div>
-                
                 <div>
-                    <h4 class="text-lg font-bold text-white mb-6">ทุนสนับสนุน</h4>
-                    <div class="bg-gray-800/50 p-4 rounded-xl border border-gray-700">
-                        <p class="text-sm text-gray-400 leading-relaxed mb-3">
-                            งานวิจัยนี้ได้รับการสนับสนุนจาก
-                        </p>
-                        <p class="font-semibold text-gray-300">
-                            สำนักงานคณะกรรมการส่งเสริมวิทยาศาสตร์ วิจัยและนวัตกรรม (สกสว.)
-                        </p>
-                    </div>
+                    <h4 class="font-display font-semibold text-white mb-4">ทุนสนับสนุน</h4>
+                    <p class="text-sm leading-relaxed">งานวิจัยนี้ได้รับการสนับสนุนจาก<br>สำนักงานคณะกรรมการส่งเสริมวิทยาศาสตร์ วิจัยและนวัตกรรม (สกสว.)</p>
                 </div>
             </div>
-            
-            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-500">
-                    &copy; 2568 ลิขสิทธิ์ของมหาวิทยาลัยราชภัฏบุรีรัมย์. สงวนลิขสิทธิ์.
-                </p>
-                <div class="flex gap-4">
-                    <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-secondary hover:text-white transition-colors">
-                        <i class="fa-brands fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-secondary hover:text-white transition-colors">
-                        <i class="fa-solid fa-envelope"></i>
-                    </a>
-                </div>
+            <div class="mt-12 pt-6 border-t border-slate-800 text-center text-sm text-slate-500">
+                &copy; 2568 ลิขสิทธิ์ของมหาวิทยาลัยราชภัฏบุรีรัมย์. สงวนลิขสิทธิ์.
             </div>
         </div>
     </footer>
 
+    <script>
+        // Scroll progress bar
+        const progress = document.getElementById('progress');
+        const onScroll = () => {
+            const h = document.documentElement;
+            const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+            progress.style.width = scrolled + '%';
+        };
+
+        // Navbar transparent -> solid
+        const nav = document.getElementById('nav');
+        const brand = document.querySelector('.nav-brand');
+        const links = document.querySelectorAll('.nav-links a');
+        const cta = document.querySelector('.nav-cta');
+        const setNav = () => {
+            if (window.scrollY > 40) {
+                nav.classList.add('glass', 'shadow-sm');
+                brand.classList.remove('text-white'); brand.classList.add('text-ink');
+                links.forEach(a => { a.classList.remove('text-white/90'); a.classList.add('text-slate-600'); });
+                cta.classList.remove('text-white','border-white/30','bg-white/10');
+                cta.classList.add('text-white','bg-brand','border-brand');
+            } else {
+                nav.classList.remove('glass', 'shadow-sm');
+                brand.classList.add('text-white'); brand.classList.remove('text-ink');
+                links.forEach(a => { a.classList.add('text-white/90'); a.classList.remove('text-slate-600'); });
+                cta.classList.add('text-white','border-white/30','bg-white/10');
+                cta.classList.remove('bg-brand','border-brand');
+            }
+        };
+        window.addEventListener('scroll', () => { onScroll(); setNav(); });
+        setNav();
+
+        // Reveal on scroll
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('show'); revealObserver.unobserve(e.target); } });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Animated counters
+        const animateCount = (el) => {
+            const target = parseFloat(el.dataset.target);
+            const decimals = parseInt(el.dataset.decimals || '0');
+            const suffix = el.dataset.suffix || '';
+            const dur = 1400; const start = performance.now();
+            const step = (now) => {
+                const p = Math.min((now - start) / dur, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = (target * eased).toFixed(decimals) + suffix;
+                if (p < 1) requestAnimationFrame(step);
+                else el.textContent = target.toFixed(decimals) + suffix;
+            };
+            requestAnimationFrame(step);
+        };
+        const countObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { animateCount(e.target); countObserver.unobserve(e.target); } });
+        }, { threshold: 0.5 });
+        document.querySelectorAll('.count').forEach(el => countObserver.observe(el));
+
+        // Animated satisfaction bars
+        const barObserver = new IntersectionObserver((entries) => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    const fill = e.target.querySelector('.bar-fill');
+                    const val = parseFloat(e.target.dataset.val);
+                    fill.style.transition = 'width 1.2s cubic-bezier(.22,1,.36,1)';
+                    requestAnimationFrame(() => { fill.style.width = (val / 5 * 100) + '%'; });
+                    barObserver.unobserve(e.target);
+                }
+            });
+        }, { threshold: 0.4 });
+        document.querySelectorAll('.bar').forEach(el => barObserver.observe(el));
+    </script>
 </body>
 </html>
